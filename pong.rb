@@ -43,10 +43,11 @@ class Paddle
 
   def initialize(side)
     @image = Gosu::Image.new(".media/img/paddle.png")
+    @side = side
 
-    if side == 'right'
+    if side == :right
       @x = 700
-    elsif side == 'left'
+    elsif side == :left
       @x = 100
     end
     @y = 300
@@ -54,10 +55,33 @@ class Paddle
 
   end
 
-  def update
+  def button_down(button)
+    if @side == :right
+      if Gosu::Window.button_down?(button) == 'w'
+        @y += 10
+      end
 
+      if  Gosu::Window.button_down?(button) == 's'
+        @y -= 10
+      end
+    else
+      if Gosu::Window.button_down?(button) == 'arrow_up'
+        @y += 10
+      end
+
+      if Gosu:Window.button_down?(button) == 'arrow_down'
+        @y -= 10
+      end 
+    end
   end
 
+  def update
+    #@image.y = @y
+  end
+
+  def draw
+    @image.draw(@x,@y,1)
+  end 
 end
 
 class Pong < Gosu::Window
@@ -67,17 +91,33 @@ class Pong < Gosu::Window
     self.caption = "Bounce!"
     #@llamas = [Llama.new(self.width, self.height), Llama.new(self.width, self.height)]
     @balls = [Ball.new(self.width, self.height)]
+
+    @paddles = [Paddle.new(:right), Paddle.new(:left)]
+  end
+
+  def button_down(button)
+    @paddles.each do |paddle|
+      paddle.button_down(button)
+    end
   end
 
   def update
     @balls.each do |llama|
       llama.update
     end
+
+    @paddles.each do |paddle|
+      paddle.update
+    end
   end
 
   def draw
     @balls.each do |llama|
       llama.draw
+    end
+
+    @paddles.each do |paddle|
+      paddle.draw
     end
   end
 
